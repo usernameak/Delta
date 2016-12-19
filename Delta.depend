@@ -1,0 +1,44 @@
+# depslib dependency file v1.0
+1482082734 source:e:\anton\collection\code\delta\main.cpp
+	<iostream>
+	<fstream>
+	<cstdint>
+	<sstream>
+	<vector>
+	<chrono>
+	"deltacompiler.h"
+	"deltainterpreter.h"
+
+1482143550 e:\anton\collection\code\delta\deltacompiler.h
+	<iostream>
+	<string>
+
+1481985918 e:\anton\collection\code\delta\deltainterpreter.h
+	<vector>
+	<cstdint>
+	<stack>
+
+1482142416 source:e:\anton\collection\code\delta\deltacompiler.cpp
+	"deltacompiler.h"
+	<cstdint>
+	<iostream>
+	<string>
+	<sstream>
+	<deque>
+	<fstream>
+	<vector>
+	"opcodes.h"
+
+1482084516 e:\anton\collection\code\delta\opcodes.h
+	<string>
+
+1482084572 source:e:\anton\collection\code\delta\deltainterpreter.cpp
+	"deltainterpreter.h"
+	<vector>
+	<cstdint>
+	<stack>
+	"opcodes.h"
+
+1482084606 source:e:\anton\collection\code\delta\opcodes.cpp
+	<string>
+
