@@ -129,8 +129,8 @@ void Compiler::compile(std::istream* code, std::ofstream* out) {
     char zeroint[1] = {0};
     for(std::vector<Token>::iterator it = tokens->begin(); it != tokens->end(); ++it) {
         Token tok = *it;
-        out->write(tok.strval.c_str(), sizeof(char)*tok.strval.size());
-        *out << (uint8_t)0;
-        //*out << (char*)&tok;
+        *out << (char)tok.type;
+        *out << tok.strval;
+        out->write((char*)&tok.intval, 4);
     }
 }
