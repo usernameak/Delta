@@ -139,9 +139,9 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode* noderet, int3
     int32_t oldptr = ptr;
     string* rettypename = new string;
     string* funcname = new string;
-    if(Compiler::parseidentifier(rettypename) != TOK_FAIL) {
+    if(parseidentifier(rettypename) != TOK_FAIL) {
         cout << *rettypename << endl;
-        if(Compiler::parseidentifier(funcname) != TOK_FAIL) {
+        if(parseidentifier(funcname) != TOK_FAIL) {
             cout << *funcname << endl;
 
             if(parsecharacter('(') == TOK_FAIL) {
@@ -152,17 +152,17 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode* noderet, int3
             string* argtypename = new string;
             string* argname = new string;
 
-            while(true) {
-                if(Compiler::parseidentifier(argtypename) == TOK_FAIL) {
+            do {
+                if(parseidentifier(argtypename) == TOK_FAIL) {
                     break;
                 }
-                if(Compiler::parseidentifier(argname) == TOK_FAIL) {
+                if(parseidentifier(argname) == TOK_FAIL) {
                     ptr = oldptr;
                     return TOK_FAIL;
                 }
                 cout << *argtypename << endl;
                 cout << *argname << endl;
-            }
+            } while (parsecharacter(',') != TOK_FAIL);
 
             if(parsecharacter(')') == TOK_FAIL) {
                 ptr = oldptr;
