@@ -184,6 +184,8 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode** noderet, int
 
             parsecode(&bodynode, 0);
 
+            *noderet = node;
+
             return TOK_FUNCTIONDECLARATION;
         }
     }
