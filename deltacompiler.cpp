@@ -193,18 +193,18 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode* noderet, int3
     return TOK_FAIL;
 }
 
-dtoken Compiler::parsefunctioncall(functioncallnode** noderet, int32_t indent) {
+dtoken Compiler::parsefunctioncall(functioncallnode* noderet, int32_t indent) {
     return TOK_FAIL;
 }
 
-dtoken Compiler::parsecode(void** noderet, int32_t indent) {
+dtoken Compiler::parsecode(void* noderet, int32_t indent) {
     void* node;
     dtoken lt;
-    if((lt = parsefunctiondeclaration((functiondeclarationnode**)&node, indent)) != TOK_FAIL) {
-        *noderet = node;
+    if((lt = parsefunctiondeclaration((functiondeclarationnode*)&node, indent)) != TOK_FAIL) {
+        noderet = node;
         return lt;
-    } else if((lt = parsefunctioncall((functioncallnode**)&node, indent)) != TOK_FAIL) {
-        *noderet = node;
+    } else if((lt = parsefunctioncall((functioncallnode*)&node, indent)) != TOK_FAIL) {
+        noderet = node;
         return lt;
     } else return TOK_FAIL;
 }
