@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1482082734 source:e:\anton\collection\code\delta\main.cpp
+1482341640 source:e:\anton\collection\code\delta\main.cpp
 	<iostream>
 	<fstream>
 	<cstdint>
@@ -9,7 +9,7 @@
 	"deltacompiler.h"
 	"deltainterpreter.h"
 
-1482341586 e:\anton\collection\code\delta\deltacompiler.h
+1482342426 e:\anton\collection\code\delta\deltacompiler.h
 	<iostream>
 	<string>
 	<vector>

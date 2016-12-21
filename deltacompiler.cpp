@@ -137,13 +137,15 @@ dtoken Compiler::parsenewline(int32_t indent, int32_t* setindent) {
 
 dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode** noderet, int32_t indent) {
     int32_t oldptr = ptr;
+    functiondeclarationnode* node = new functiondeclarationnode;
     string* rettypename = new string;
     string* funcname = new string;
     if(parseidentifier(rettypename) != TOK_FAIL) {
         cout << *rettypename << endl;
+        node->rettype = rettypename;
         if(parseidentifier(funcname) != TOK_FAIL) {
             cout << *funcname << endl;
-
+            node->name = funcname;
             if(parsecharacter('(') == TOK_FAIL) {
                 ptr = oldptr;
                 return TOK_FAIL;
@@ -178,9 +180,9 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode** noderet, int
             }
             cout << *cindent << endl;
 
-            void* node;
+            void* bodynode;
 
-            parsecode(&node, 0);
+            parsecode(&bodynode, 0);
 
             return TOK_FUNCTIONDECLARATION;
         }
@@ -214,7 +216,7 @@ void Compiler::compile(std::istream* codestream, std::ofstream* out) {
     void* id;
     dtoken lt;
     if((lt = parsecode(&id, 0)) != TOK_FAIL) {
-        cout << "OK" << endl;
+        cout << *(((functiondeclarationnode*)id)->name) << endl;
     }
 
     /*for(std::vector<Token>::iterator it = tokens->begin(); it != tokens->end(); ++it) {

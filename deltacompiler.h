@@ -19,8 +19,8 @@ struct Token {
 enum dtoken {TOK_FAIL, TOK_FUNCTIONDECLARATION, TOK_IDENTIFIER, TOK_CHARACTER, TOK_NEWLINE};
 
 struct functiondeclarationnode {
-    string name;
-    string rettype;
+    string* name;
+    string* rettype;
     vector<string> argtypes;
     vector<string> args;
     dtoken bodytype;
