@@ -19,7 +19,7 @@ bool Compiler::isIdentifierStart(char c) {
 
 bool Compiler::isIdentifierChar(char c) {
     if(isIdentifierStart(c) ||
-       (c >= '0' && c <= '9')) {
+       isDigitChar(c)) {
         return true;
     }
     return false;
@@ -135,7 +135,7 @@ dtoken Compiler::parsenewline(int32_t indent, int32_t* setindent) {
     return TOK_FAIL;
 }
 
-dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode** noderet, int32_t indent) {
+dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode* noderet, int32_t indent) {
     int32_t oldptr = ptr;
     functiondeclarationnode* node = new functiondeclarationnode;
     string* rettypename = new string;
@@ -184,7 +184,7 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode** noderet, int
 
             parsecode(&bodynode, 0);
 
-            *noderet = node;
+            noderet = node;
 
             return TOK_FUNCTIONDECLARATION;
         }
