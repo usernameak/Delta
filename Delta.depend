@@ -9,16 +9,17 @@
 	"deltacompiler.h"
 	"deltainterpreter.h"
 
-1482318998 e:\anton\collection\code\delta\deltacompiler.h
+1482320086 e:\anton\collection\code\delta\deltacompiler.h
 	<iostream>
 	<string>
+	<vector>
 
 1481985918 e:\anton\collection\code\delta\deltainterpreter.h
 	<vector>
 	<cstdint>
 	<stack>
 
-1482316110 source:e:\anton\collection\code\delta\deltacompiler.cpp
+1482319680 source:e:\anton\collection\code\delta\deltacompiler.cpp
 	"deltacompiler.h"
 	<cstdint>
 	<iostream>

@@ -47,7 +47,7 @@ char Compiler::next() {
     return code.at(++ptr);
 }
 
-linetype Compiler::parseidentifier(string* lineret) {
+dtoken Compiler::parseidentifier(string* lineret) {
     int32_t oldptr = ptr;
     string identifier;
     char c;
@@ -59,21 +59,21 @@ linetype Compiler::parseidentifier(string* lineret) {
                     continue;
                 }
                 ptr = oldptr;
-                return LT_FAIL;
+                return TOK_FAIL;
             }
             identifier = c;
             break;
         }
     } catch(out_of_range err) {
         ptr = oldptr;
-        return LT_FAIL;
+        return TOK_FAIL;
     }
     try {
         while(true) {
             c = getNext();
             if(!isIdentifierChar(c)) {
                 *lineret = identifier;
-                return LT_IDENTIFIER;
+                return TOK_IDENTIFIER;
             }
             identifier += c;
             ptr++;
@@ -81,11 +81,11 @@ linetype Compiler::parseidentifier(string* lineret) {
 
     } catch(out_of_range err) {
         *lineret = identifier;
-        return LT_IDENTIFIER;
+        return TOK_IDENTIFIER;
     }
 }
 
-linetype Compiler::parsecharacter(char ic) {
+dtoken Compiler::parsecharacter(char ic) {
     int32_t oldptr = ptr;
     char c;
     while(true) {
@@ -95,14 +95,14 @@ linetype Compiler::parsecharacter(char ic) {
                 continue;
             }
             ptr = oldptr;
-            return LT_FAIL;
+            return TOK_FAIL;
         }
         break;
     }
-    return LT_CHARACTER;
+    return TOK_CHARACTER;
 }
 
-linetype Compiler::parsenewline(int32_t indent, int32_t* setindent) {
+dtoken Compiler::parsenewline(int32_t indent, int32_t* setindent) {
     int32_t oldptr = ptr;
     char c;
     while(isWhitespaceChar(c = next())) {
@@ -118,7 +118,7 @@ linetype Compiler::parsenewline(int32_t indent, int32_t* setindent) {
             }
             if(rindent > indent) {
                 *setindent = rindent;
-                return LT_NEWLINE;
+                return TOK_NEWLINE;
             }
         } else {
             int32_t rindent = 0;
@@ -127,72 +127,70 @@ linetype Compiler::parsenewline(int32_t indent, int32_t* setindent) {
                 ptr++;
             }
             if(rindent == indent) {
-                return LT_NEWLINE;
+                return TOK_NEWLINE;
             }
         }
     }
     ptr = oldptr;
-    return LT_FAIL;
+    return TOK_FAIL;
 }
 
-linetype Compiler::parsefunctiondeclaration(functiondeclarationnode* lineret, int32_t indent) {
+dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode* noderet, int32_t indent) {
     int32_t oldptr = ptr;
     string* rettypename = new string;
     string* funcname = new string;
-    char c;
-    if(Compiler::parseidentifier(rettypename) != LT_FAIL) {
+    if(Compiler::parseidentifier(rettypename) != TOK_FAIL) {
         cout << *rettypename << endl;
-        if(Compiler::parseidentifier(funcname) != LT_FAIL) {
+        if(Compiler::parseidentifier(funcname) != TOK_FAIL) {
             cout << *funcname << endl;
 
-            if(parsecharacter('(') == LT_FAIL) {
+            if(parsecharacter('(') == TOK_FAIL) {
                 ptr = oldptr;
-                return LT_FAIL;
+                return TOK_FAIL;
             }
 
             string* argtypename = new string;
             string* argname = new string;
 
             while(true) {
-                if(Compiler::parseidentifier(argtypename) == LT_FAIL) {
+                if(Compiler::parseidentifier(argtypename) == TOK_FAIL) {
                     break;
                 }
-                if(Compiler::parseidentifier(argname) == LT_FAIL) {
+                if(Compiler::parseidentifier(argname) == TOK_FAIL) {
                     ptr = oldptr;
-                    return LT_FAIL;
+                    return TOK_FAIL;
                 }
                 cout << *argtypename << endl;
                 cout << *argname << endl;
             }
 
-            if(parsecharacter(')') == LT_FAIL) {
+            if(parsecharacter(')') == TOK_FAIL) {
                 ptr = oldptr;
-                return LT_FAIL;
+                return TOK_FAIL;
             }
 
-            int* cindent;
-            *cindent = 0;
+            int* cindent = new int(0);
 
-            if(parsenewline(indent, cindent) == LT_FAIL) {
+            if(parsenewline(indent, cindent) == TOK_FAIL) {
                 ptr = oldptr;
 
-                return LT_FAIL;
+                return TOK_FAIL;
             }
             cout << *cindent << endl;
-            return LT_FUNCTIONDECLARATION;
+            return TOK_FUNCTIONDECLARATION;
         }
     }
     ptr = oldptr;
-    return LT_FAIL;
+    return TOK_FAIL;
 }
 
-linetype Compiler::parsecode(void* lineret) {
-    void* line;
-    linetype lt;
-    if((lt = parsefunctiondeclaration((functiondeclarationnode*)line, 0)) != LT_FAIL) {
-        lineret = line;
+dtoken Compiler::parsecode(void* noderet) {
+    void* node;
+    dtoken lt;
+    if((lt = parsefunctiondeclaration((functiondeclarationnode*)node, 0)) != TOK_FAIL) {
+        noderet = node;
         return lt;
-    } else return LT_FAIL;
+    } else return TOK_FAIL;
 }
 
 void Compiler::compile(std::istream* codestream, std::ofstream* out) {
@@ -202,8 +200,8 @@ void Compiler::compile(std::istream* codestream, std::ofstream* out) {
     code.assign(std::istreambuf_iterator<char>(*codestream), std::istreambuf_iterator<char>());
 
     void* id;
-    linetype lt;
-    if((lt = parsecode(id)) != LT_FAIL) {
+    dtoken lt;
+    if((lt = parsecode(id)) != TOK_FAIL) {
         cout << "OK" << endl;
     }
 

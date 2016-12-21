@@ -17,14 +17,14 @@ struct Token {
     int32_t intval = 0;
 };*/
 
-enum linetype {LT_FAIL, LT_FUNCTIONDECLARATION, LT_IDENTIFIER, LT_CHARACTER, LT_NEWLINE};
+enum dtoken {TOK_FAIL, TOK_FUNCTIONDECLARATION, TOK_IDENTIFIER, TOK_CHARACTER, TOK_NEWLINE};
 
 struct functiondeclarationnode {
     string name;
     string rettype;
     vector<string> argtypes;
     vector<string> args;
-    linetype bodytype;
+    dtoken bodytype;
     void* body;
 };
 
@@ -36,13 +36,13 @@ private:
     bool isIdentifierChar(char);
     bool isDigitChar(char);
     bool isWhitespaceChar(char);
-    linetype parsecode(void*);
-    linetype parsefunctiondeclaration(functiondeclarationnode*, int32_t);
-    linetype parsecharacter(char);
-    linetype parsenewline(int32_t, int32_t*);
+    dtoken parsecode(void*);
+    dtoken parsefunctiondeclaration(functiondeclarationnode*, int32_t);
+    dtoken parsecharacter(char);
+    dtoken parsenewline(int32_t, int32_t*);
     char getNext();
     char next();
-    linetype parseidentifier(string*);
+    dtoken parseidentifier(string*);
 
 public:
 	void compile(istream*, ofstream*);
