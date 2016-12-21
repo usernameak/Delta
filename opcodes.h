@@ -1,6 +1,4 @@
-#ifndef OPCODES_H
-#define OPCODES_H
-
+#pragma once
 #include <string>
 
 enum OpCodes {
@@ -13,5 +11,3 @@ enum OpCodes {
 };
 
 OpCodes mapStringToOpcode(std::string);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef DELTACOMPILER_H
-#define DELTACOMPILER_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -28,6 +27,8 @@ struct functiondeclarationnode {
     void* body;
 };
 
+struct functioncallnode {};
+
 class Compiler {
 private:
     int32_t ptr;
@@ -36,8 +37,9 @@ private:
     bool isIdentifierChar(char);
     bool isDigitChar(char);
     bool isWhitespaceChar(char);
-    dtoken parsecode(void*);
-    dtoken parsefunctiondeclaration(functiondeclarationnode*, int32_t);
+    dtoken parsecode(void**, int32_t);
+    dtoken parsefunctiondeclaration(functiondeclarationnode**, int32_t);
+    dtoken parsefunctioncall(functioncallnode**, int32_t);
     dtoken parsecharacter(char);
     dtoken parsenewline(int32_t, int32_t*);
     char getNext();
@@ -47,5 +49,3 @@ private:
 public:
 	void compile(istream*, ofstream*);
 };
-
-#endif

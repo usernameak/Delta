@@ -9,10 +9,10 @@
 
 using namespace std;
 
-static chrono::nanoseconds getCurrentTime() {
+/*static chrono::nanoseconds getCurrentTime() {
     using namespace std::chrono;
     return duration_cast<nanoseconds>(system_clock::now().time_since_epoch());
-}
+}*/
 
 int main() {
 	ifstream* code = new ifstream("test.delta", ios_base::in);

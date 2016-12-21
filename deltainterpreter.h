@@ -1,5 +1,4 @@
-#ifndef DELTAINTERPRETER_H
-#define DELTAINTERPRETER_H
+#pragma once
 
 #include <vector>
 #include <cstdint>
@@ -20,5 +19,3 @@ public:
 	void interpretOp();
 	void interpret(std::vector<int32_t>*);
 };
-
-#endif
