@@ -3,10 +3,9 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
-#include <sstream>
-#include <deque>
 #include <fstream>
 #include <vector>
+#include <stdexcept>
 #include "opcodes.h"
 
 bool Compiler::isIdentifierStart(char c) {
@@ -33,104 +32,186 @@ bool Compiler::isDigitChar(char c) {
     return false;
 }
 
-void Compiler::compile(std::istream* code, std::ofstream* out) {
-	using namespace std;
-	//string line;
-	//istringstream* linestream;
+bool Compiler::isWhitespaceChar(char c) {
+    if(c == ' ' || c == '\t') {
+        return true;
+    }
+    return false;
+}
 
-	/*while(getline(*code, line)) {
-		string* oppart = new string;
-		deque<string*>* opparts = new deque<string*>;
-		linestream = new istringstream(line);
-		char c;
-		while(linestream->get(c)) {
-			if(c != ' ') {
-				*oppart += c;
-				//cout << *oppart << endl;
-			} else if(oppart->compare("") != 0) {
-				opparts->push_back(oppart);
-				oppart = new string;
-			}
+char Compiler::getNext() {
+    return code.at(ptr+1);
+}
 
-		}
-		if(oppart->compare("") != 0) {
-			opparts->push_back(oppart);
-			oppart = new string;
-		}
+char Compiler::next() {
+    return code.at(++ptr);
+}
 
-		if(!opparts->empty()) {
-			int32_t oc = mapStringToOpcode(*opparts->front());
-			out->write((char*)&oc, 4);
-			opparts->pop_front();
-			while(!opparts->empty()) {
-				oc = stoi(*opparts->front());
-				out->write((char*)&oc, 4);
-				opparts->pop_front();
-			}
-		}
-	}*/
-	char c;
-    TokenType curtok = TOK_NONE;
-    string curtokidentifier;
-    string curtokstring;
-    string curtoknumber;
-    vector<Token>* tokens = new vector<Token>;
-    while(code->get(c)) {
-        if(curtok == TOK_IDENTIFIER && isIdentifierChar(c)) {
-            curtokidentifier += c;
-        } else if(curtok == TOK_INT && isDigitChar(c)) {
-            curtoknumber += c;
-        } else {
-            if(curtok == TOK_IDENTIFIER) {
-                Token idtok;
-                idtok.type = TOK_IDENTIFIER;
-                idtok.strval = curtokidentifier;
-                tokens->push_back(idtok);
-                curtok = TOK_NONE;
-            } else if(curtok == TOK_INT) {
-                Token numtok;
-                numtok.type = TOK_INT;
-                numtok.intval = stoi(curtoknumber);
-                tokens->push_back(numtok);
-                curtok = TOK_NONE;
-            }
-            if(curtok == TOK_STRING) {
-                if(c == '"') {
-                    Token strtok;
-                    strtok.type = TOK_STRING;
-                    strtok.strval = curtokstring;
-                    tokens->push_back(strtok);
-                    curtok = TOK_NONE;
-                } else {
-                    curtokstring += c;
+linetype Compiler::parseidentifier(string* lineret) {
+    int32_t oldptr = ptr;
+    string identifier;
+    char c;
+    try {
+        while(true) {
+            c = next();
+            if(!isIdentifierStart(c)) {
+                if(isWhitespaceChar(c)) {
+                    continue;
                 }
-            } else if(isDigitChar(c)) {
-                curtok = TOK_INT;
-                curtoknumber = c;
-            } else if(c == '"') {
-                curtok = TOK_STRING;
-                curtokstring = "";
-            } else if(c == '(') {
-                Token optok;
-                optok.type = TOK_OPENPAREN;
-                tokens->push_back(optok);
-            } else if(c == ')') {
-                Token cptok;
-                cptok.type = TOK_CLOSEPAREN;
-                tokens->push_back(cptok);
-            } else if(isIdentifierStart(c)) {
-                curtok = TOK_IDENTIFIER;
-                curtokidentifier = c;
-            } else if(c != ' ' && c != '\t' && c != '\r' && c != '\n') {
-                cout << "Parse error: unknown character '" << c << "'" << endl;
+                ptr = oldptr;
+                return LT_FAIL;
+            }
+            identifier = c;
+            break;
+        }
+    } catch(out_of_range err) {
+        ptr = oldptr;
+        return LT_FAIL;
+    }
+    try {
+        while(true) {
+            c = getNext();
+            if(!isIdentifierChar(c)) {
+                *lineret = identifier;
+                return LT_IDENTIFIER;
+            }
+            identifier += c;
+            ptr++;
+        }
+
+    } catch(out_of_range err) {
+        *lineret = identifier;
+        return LT_IDENTIFIER;
+    }
+}
+
+linetype Compiler::parsecharacter(char ic) {
+    int32_t oldptr = ptr;
+    char c;
+    while(true) {
+        c = next();
+        if(c != ic) {
+            if(isWhitespaceChar(c)) {
+                continue;
+            }
+            ptr = oldptr;
+            return LT_FAIL;
+        }
+        break;
+    }
+    return LT_CHARACTER;
+}
+
+linetype Compiler::parsenewline(int32_t indent, int32_t* setindent) {
+    int32_t oldptr = ptr;
+    char c;
+    while(isWhitespaceChar(c = next())) {
+
+    }
+    if(c == '\n' || (c == '\r' && (c = next()) == '\n')) {
+        if(setindent != 0) {
+
+            int32_t rindent = 0;
+            while(isWhitespaceChar(c = getNext())) {
+                rindent++;
+                ptr++;
+            }
+            if(rindent > indent) {
+                *setindent = rindent;
+                return LT_NEWLINE;
+            }
+        } else {
+            int32_t rindent = 0;
+            while(isWhitespaceChar(c = getNext())) {
+                rindent++;
+                ptr++;
+            }
+            if(rindent == indent) {
+                return LT_NEWLINE;
             }
         }
     }
-    char zeroint[1] = {0};
-    for(std::vector<Token>::iterator it = tokens->begin(); it != tokens->end(); ++it) {
-        Token tok = *it;
-        *out << (char)tok.type;
-        *out << tok.strval;
-        out->write((char*)&tok.intval, 4);
+    ptr = oldptr;
+    return LT_FAIL;
+}
+
+linetype Compiler::parsefunctiondeclaration(functiondeclarationnode* lineret, int32_t indent) {
+    int32_t oldptr = ptr;
+    string* rettypename = new string;
+    string* funcname = new string;
+    char c;
+    if(Compiler::parseidentifier(rettypename) != LT_FAIL) {
+        cout << *rettypename << endl;
+        if(Compiler::parseidentifier(funcname) != LT_FAIL) {
+            cout << *funcname << endl;
+
+            if(parsecharacter('(') == LT_FAIL) {
+                ptr = oldptr;
+                return LT_FAIL;
+            }
+
+            string* argtypename = new string;
+            string* argname = new string;
+
+            while(true) {
+                if(Compiler::parseidentifier(argtypename) == LT_FAIL) {
+                    break;
+                }
+                if(Compiler::parseidentifier(argname) == LT_FAIL) {
+                    ptr = oldptr;
+                    return LT_FAIL;
+                }
+                cout << *argtypename << endl;
+                cout << *argname << endl;
+            }
+
+            if(parsecharacter(')') == LT_FAIL) {
+                ptr = oldptr;
+                return LT_FAIL;
+            }
+
+            int* cindent;
+            *cindent = 0;
+
+            if(parsenewline(indent, cindent) == LT_FAIL) {
+                ptr = oldptr;
+
+                return LT_FAIL;
+            }
+            cout << *cindent << endl;
+            return LT_FUNCTIONDECLARATION;
+        }
     }
+    ptr = oldptr;
+    return LT_FAIL;
+}
+
+linetype Compiler::parsecode(void* lineret) {
+    void* line;
+    linetype lt;
+    if((lt = parsefunctiondeclaration((functiondeclarationnode*)line, 0)) != LT_FAIL) {
+        lineret = line;
+        return lt;
+    } else return LT_FAIL;
+}
+
+void Compiler::compile(std::istream* codestream, std::ofstream* out) {
+	using namespace std;
+
+    ptr = -1;
+    code.assign(std::istreambuf_iterator<char>(*codestream), std::istreambuf_iterator<char>());
+
+    void* id;
+    linetype lt;
+    if((lt = parsecode(id)) != LT_FAIL) {
+        cout << "OK" << endl;
+    }
+
+    /*for(std::vector<Token>::iterator it = tokens->begin(); it != tokens->end(); ++it) {
+        Token tok = *it;
+        cout << "type: " << tok.type << endl;
+        cout << "strval: " << tok.strval << endl;
+        cout << "intval: " << tok.intval << endl;
+        cout << "-----" << endl;
+    }*/
 }

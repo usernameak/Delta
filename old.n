@@ -1,0 +1,147 @@
+//string line;
+	//istringstream* linestream;
+
+	/*while(getline(*code, line)) {
+		string* oppart = new string;
+		deque<string*>* opparts = new deque<string*>;
+		linestream = new istringstream(line);
+		char c;
+		while(linestream->get(c)) {
+			if(c != ' ') {
+				*oppart += c;
+				//cout << *oppart << endl;
+			} else if(oppart->compare("") != 0) {
+				opparts->push_back(oppart);
+				oppart = new string;
+			}
+
+		}
+		if(oppart->compare("") != 0) {
+			opparts->push_back(oppart);
+			oppart = new string;
+		}
+
+		if(!opparts->empty()) {
+			int32_t oc = mapStringToOpcode(*opparts->front());
+			out->write((char*)&oc, 4);
+			opparts->pop_front();
+			while(!opparts->empty()) {
+				oc = stoi(*opparts->front());
+				out->write((char*)&oc, 4);
+				opparts->pop_front();
+			}
+		}
+	}*/
+	/*char c;
+    TokenType curtok = TOK_NONE;
+    string curtokidentifier;
+    string curtokstring;
+    string curtoknumber;
+    vector<Token>* tokens = new vector<Token>;
+    while(code->get(c)) {
+        if(curtok == TOK_IDENTIFIER && isIdentifierChar(c)) {
+            curtokidentifier += c;
+        } else if(curtok == TOK_INT && isDigitChar(c)) {
+            curtoknumber += c;
+        } else {
+            if(curtok == TOK_IDENTIFIER) {
+                Token idtok;
+                idtok.type = TOK_IDENTIFIER;
+                idtok.strval = curtokidentifier;
+                tokens->push_back(idtok);
+                curtok = TOK_NONE;
+            } else if(curtok == TOK_INT) {
+                Token numtok;
+                numtok.type = TOK_INT;
+                numtok.intval = stoi(curtoknumber);
+                tokens->push_back(numtok);
+                curtok = TOK_NONE;
+            }
+            if(curtok == TOK_STRING) {
+                if(c == '"') {
+                    Token strtok;
+                    strtok.type = TOK_STRING;
+                    strtok.strval = curtokstring;
+                    tokens->push_back(strtok);
+                    curtok = TOK_NONE;
+                } else {
+                    curtokstring += c;
+                }
+            } else if(isDigitChar(c)) {
+                curtok = TOK_INT;
+                curtoknumber = c;
+            } else if(c == '"') {
+                curtok = TOK_STRING;
+                curtokstring = "";
+            } else if(isIdentifierStart(c)) {
+                curtok = TOK_IDENTIFIER;
+                curtokidentifier = c;
+            } else if(c != ' ' && c != '\t' && c != '\r' && c != '\n') {
+                cout << "Parse error: unknown character '" << c << "'" << endl;
+            }
+        }
+    }
+    char zeroint[1] = {0};
+    for(std::vector<Token>::iterator it = tokens->begin(); it != tokens->end(); ++it) {
+        Token tok = *it;
+        cout << tok.type << endl;
+        cout << tok.intval << endl;
+    }*/
+    /*char c;
+    TokenType curtok = TOK_NONE;
+    TokenState curts = TS_NONE;
+    string curtokidentifier;
+    vector<Token>* tokens = new vector<Token>;
+    while(code->get(c)) {
+        if(curts == TS_CAPCHAR && curtok == TOK_CAP) {
+            if(isIdentifierChar(c)) {
+                curtokidentifier += c;
+            } else {
+                Token captok;
+                captok.type = TOK_CAP;
+                captok.strval = curtokidentifier;
+                tokens->push_back(captok);
+                curtok = TOK_NONE;
+                curts = TS_CAPARGS;
+            }
+        } else if(curts == TS_CAPARGS && curtok == TOK_CAPARG) {
+            if(isIdentifierChar(c)) {
+                curtokidentifier += c;
+            } else {
+                Token argtok;
+                argtok.type = TOK_CAPARG;
+                argtok.strval = curtokidentifier;
+                tokens->push_back(argtok);
+                curtok = TOK_NONE;
+            }
+        } else if(curts == TS_NONE && c == '\\') {
+            if(code->get(c) && isIdentifierStart(c)) {
+                curtok = TOK_CAP;
+                curts = TS_CAPCHAR;
+
+                curtokidentifier = c;
+            } else {
+                if(code->good()) {
+                    cout << "Unknown character '" << c << "' after \\" << endl;
+                } else {
+                    cout << "Unexpected end of file after \\" << endl;
+                }
+                break;
+            }
+        } else if(curts == TS_CAPARGS) {
+            if(isIdentifierStart(c)) {
+                curtokidentifier = c;
+                curtok = TOK_CAPARG;
+            } else if(c == '=') {
+                Token capasstok;
+                capasstok.type = TOK_CAPASSIGN;
+                tokens->push_back(capasstok);
+                curtok = TOK_NONE;
+                curts = TS_CAPATOMS;
+            }
+
+        }/* else if(!isWhitespaceChar(c)) {
+            cout << "Unknown character '" << c << "'" << endl;
+            break;
+        }*/
+    //}

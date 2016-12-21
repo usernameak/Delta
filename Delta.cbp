@@ -37,6 +37,7 @@
 		<Unit filename="deltainterpreter.cpp" />
 		<Unit filename="deltainterpreter.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="old.n" />
 		<Unit filename="opcodes.cpp" />
 		<Unit filename="opcodes.h" />
 		<Unit filename="test.delta" />

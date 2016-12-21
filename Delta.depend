@@ -9,7 +9,7 @@
 	"deltacompiler.h"
 	"deltainterpreter.h"
 
-1482143550 e:\anton\collection\code\delta\deltacompiler.h
+1482318998 e:\anton\collection\code\delta\deltacompiler.h
 	<iostream>
 	<string>
 
@@ -18,15 +18,14 @@
 	<cstdint>
 	<stack>
 
-1482142416 source:e:\anton\collection\code\delta\deltacompiler.cpp
+1482316110 source:e:\anton\collection\code\delta\deltacompiler.cpp
 	"deltacompiler.h"
 	<cstdint>
 	<iostream>
 	<string>
-	<sstream>
-	<deque>
 	<fstream>
 	<vector>
+	<stdexcept>
 	"opcodes.h"
 
 1482084516 e:\anton\collection\code\delta\opcodes.h
