@@ -19,7 +19,7 @@ bool Compiler::isIdentifierStart(char c) {
 
 bool Compiler::isIdentifierChar(char c) {
     if(isIdentifierStart(c) ||
-       (c >= '0' && c <= '9')) {
+       isDigitChar(c)) {
         return true;
     }
     return false;
@@ -135,7 +135,7 @@ dtoken Compiler::parsenewline(int32_t indent, int32_t* setindent) {
     return TOK_FAIL;
 }
 
-dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode** noderet, int32_t indent) {
+dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode* noderet, int32_t indent) {
     int32_t oldptr = ptr;
     functiondeclarationnode* node = new functiondeclarationnode;
     string* rettypename = new string;
@@ -184,7 +184,7 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode** noderet, int
 
             parsecode(&bodynode, 0);
 
-            *noderet = node;
+            noderet = node;
 
             return TOK_FUNCTIONDECLARATION;
         }
@@ -193,18 +193,18 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode** noderet, int
     return TOK_FAIL;
 }
 
-dtoken Compiler::parsefunctioncall(functioncallnode** noderet, int32_t indent) {
+dtoken Compiler::parsefunctioncall(functioncallnode* noderet, int32_t indent) {
     return TOK_FAIL;
 }
 
-dtoken Compiler::parsecode(void** noderet, int32_t indent) {
+dtoken Compiler::parsecode(void* noderet, int32_t indent) {
     void* node;
     dtoken lt;
-    if((lt = parsefunctiondeclaration((functiondeclarationnode**)&node, indent)) != TOK_FAIL) {
-        *noderet = node;
+    if((lt = parsefunctiondeclaration((functiondeclarationnode*)&node, indent)) != TOK_FAIL) {
+        noderet = node;
         return lt;
-    } else if((lt = parsefunctioncall((functioncallnode**)&node, indent)) != TOK_FAIL) {
-        *noderet = node;
+    } else if((lt = parsefunctioncall((functioncallnode*)&node, indent)) != TOK_FAIL) {
+        noderet = node;
         return lt;
     } else return TOK_FAIL;
 }
