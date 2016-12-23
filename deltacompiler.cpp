@@ -47,7 +47,7 @@ char Compiler::next() {
     return code.at(++ptr);
 }
 
-dtoken Compiler::parseidentifier(string* lineret) {
+TokenType Compiler::parseidentifier(string* lineret) {
     int32_t oldptr = ptr;
     string identifier;
     char c;
@@ -85,7 +85,7 @@ dtoken Compiler::parseidentifier(string* lineret) {
     }
 }
 
-dtoken Compiler::parsecharacter(char ic) {
+TokenType Compiler::parsecharacter(char ic) {
     int32_t oldptr = ptr;
     char c;
     while(true) {
@@ -102,7 +102,7 @@ dtoken Compiler::parsecharacter(char ic) {
     return TOK_CHARACTER;
 }
 
-dtoken Compiler::parsenewline(int32_t indent, int32_t* setindent) {
+TokenType Compiler::parsenewline(int32_t indent, int32_t* setindent) {
     int32_t oldptr = ptr;
     char c;
     while(isWhitespaceChar(c = next())) {
@@ -135,9 +135,10 @@ dtoken Compiler::parsenewline(int32_t indent, int32_t* setindent) {
     return TOK_FAIL;
 }
 
-dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode*& noderet, int32_t indent) {
+TokenType Compiler::parsefunctiondeclaration(FunctionDeclaration*& noderet, int32_t indent) {
+
     int32_t oldptr = ptr;
-    functiondeclarationnode* node = new functiondeclarationnode;
+    FunctionDeclaration* node = new FunctionDeclaration;
     string* rettypename = new string;
     string* funcname = new string;
     if(parseidentifier(rettypename) != TOK_FAIL) {
@@ -180,9 +181,9 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode*& noderet, int
             }
             cout << *cindent << endl;
 
-            void* bodynode;
+            Node* bodynode;
 
-            parsecode(bodynode, 0);
+            parsecode(bodynode, *cindent);
 
             noderet = node;
 
@@ -193,17 +194,17 @@ dtoken Compiler::parsefunctiondeclaration(functiondeclarationnode*& noderet, int
     return TOK_FAIL;
 }
 
-dtoken Compiler::parsefunctioncall(functioncallnode*& noderet, int32_t indent) {
+TokenType Compiler::parsefunctioncall(FunctionCall*& noderet, int32_t indent) {
     return TOK_FAIL;
 }
 
-dtoken Compiler::parsecode(void*& noderet, int32_t indent) {
-    void* node;
-    dtoken lt;
-    if((lt = parsefunctiondeclaration((functiondeclarationnode*&)node, indent)) != TOK_FAIL) {
+TokenType Compiler::parsecode(Node*& noderet, int32_t indent) {
+    Node* node;
+    TokenType lt;
+    if((lt = parsefunctiondeclaration((FunctionDeclaration*&)node, indent)) != TOK_FAIL) {
         noderet = node;
         return lt;
-    } else if((lt = parsefunctioncall((functioncallnode*&)node, indent)) != TOK_FAIL) {
+    } else if((lt = parsefunctioncall((FunctionCall*&)node, indent)) != TOK_FAIL) {
         noderet = node;
         return lt;
     } else return TOK_FAIL;
@@ -215,10 +216,10 @@ void Compiler::compile(std::istream* codestream, std::ofstream* out) {
     ptr = -1;
     code.assign(std::istreambuf_iterator<char>(*codestream), std::istreambuf_iterator<char>());
 
-    void* id;
-    dtoken lt;
+    Node* id;
+    TokenType lt;
     if((lt = parsecode(id, 0)) != TOK_FAIL) {
-        cout << *(((functiondeclarationnode*)id)->name) << endl;
+        cout << *(((FunctionDeclaration*)id)->name) << endl;
     }
 
     /*for(std::vector<Token>::iterator it = tokens->begin(); it != tokens->end(); ++it) {

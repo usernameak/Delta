@@ -16,18 +16,37 @@ struct Token {
     int32_t intval = 0;
 };*/
 
-enum dtoken {TOK_FAIL, TOK_FUNCTIONDECLARATION, TOK_IDENTIFIER, TOK_CHARACTER, TOK_NEWLINE};
+enum TokenType {TOK_FAIL, TOK_FUNCTIONDECLARATION, TOK_IDENTIFIER, TOK_CHARACTER, TOK_NEWLINE};
 
-struct functiondeclarationnode {
+class Node {
+    public:
+    TokenType tokentype;
+};
+
+class FunctionDeclaration : Node {
+    public:
     string* name;
     string* rettype;
     vector<string> argtypes;
     vector<string> args;
-    dtoken bodytype;
-    void* body;
+    TokenType bodytype;
+    Node* body;
 };
 
-struct functioncallnode {};
+class FunctionCall : Node {
+
+};
+
+/*struct FunctionDeclaration {
+    string* name;
+    string* rettype;
+    vector<string> argtypes;
+    vector<string> args;
+    TokenType bodytype;
+    void* body;
+};*/
+
+//struct FunctionCall {};
 
 class Compiler {
 private:
@@ -37,14 +56,14 @@ private:
     bool isIdentifierChar(char);
     bool isDigitChar(char);
     bool isWhitespaceChar(char);
-    dtoken parsecode(void*&, int32_t);
-    dtoken parsefunctiondeclaration(functiondeclarationnode*&, int32_t);
-    dtoken parsefunctioncall(functioncallnode*&, int32_t);
-    dtoken parsecharacter(char);
-    dtoken parsenewline(int32_t, int32_t*);
+    TokenType parsecode(Node*&, int32_t);
+    TokenType parsefunctiondeclaration(FunctionDeclaration*&, int32_t);
+    TokenType parsefunctioncall(FunctionCall*&, int32_t);
+    TokenType parsecharacter(char);
+    TokenType parsenewline(int32_t, int32_t*);
     char getNext();
     char next();
-    dtoken parseidentifier(string*);
+    TokenType parseidentifier(string*);
 
 public:
 	void compile(istream*, ofstream*);
